@@ -1,0 +1,78 @@
+name: Build
+
+# Compile check for every pushed branch and pull request (Visual Studio 2022, Release x64).
+# Does not create tags or releases: that is release.yml.
+# On a push to the default branch (main), the built dwmapi.dll and dwmapi.pdb are committed to
+# Build/. Every run also attaches them to the run as an artifact.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# A newer push cancels the older build, so Build/ never gets an older dll after a newer one.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Release x64
+        run: msbuild RepoHax.sln /p:Configuration=Release /p:Platform=x64 /v:minimal /nologo /m
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: RepoHax-${{ github.sha }}
+          path: |
+            build/Release/bin/dwmapi.dll
+            build/Release/bin/dwmapi.pdb
+          if-no-files-found: error
+
+      # Pushes made with GITHUB_TOKEN do not start new workflow runs, so this does not loop.
+      - name: Commit dll and pdb to Build/
+        if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+        shell: pwsh
+        run: |
+          $sha    = '${{ github.sha }}'
+          $branch = '${{ github.ref_name }}'
+          $run    = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+
+          New-Item -ItemType Directory -Force -Path Build | Out-Null
+          Copy-Item build/Release/bin/dwmapi.dll Build/dwmapi.dll -Force
+          Copy-Item build/Release/bin/dwmapi.pdb Build/dwmapi.pdb -Force
+          @(
+            "Built from commit: $sha"
+            "Branch:            $branch"
+            "Built (UTC):       $((Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm'))"
+            "CI run:            $run"
+            ""
+            "Copy dwmapi.dll (and optionally dwmapi.pdb, for function names in crash reports)"
+            "next to REPO.exe."
+          ) | Out-File -Encoding utf8 Build/BUILD_INFO.txt
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f Build/dwmapi.dll Build/dwmapi.pdb Build/BUILD_INFO.txt
+          git commit -m "Build: dwmapi.dll + dwmapi.pdb for $($sha.Substring(0, 7)) [skip ci]"
+
+          for ($i = 1; $i -le 4; $i++) {
+            git pull --rebase --no-edit origin $branch
+            git push origin "HEAD:$branch"
+            if ($LASTEXITCODE -eq 0) { exit 0 }
+            Start-Sleep -Seconds (5 * $i)
+          }
+          exit 1

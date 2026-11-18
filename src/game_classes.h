@@ -671,6 +671,19 @@ struct ItemBattery : Unity::MonoBehaviour
     METHOD_WRAPPER_EX(BatteryFullPercentChange, "System.Void(System.Int32,System.Boolean,System.Boolean)");
 };
 
+// The shop keeper. Showing it a shop item can get a discount: the host rolls the verdict
+// (ItemVerdictPositiveGet, 1 in 3) and after 3 attempts it denies items (itemDiscountAttempts).
+struct ShopKeeper : Unity::MonoBehaviour
+{
+    using Unity::MonoBehaviour::MonoBehaviour;
+
+    META("Assembly-CSharp", "", "ShopKeeper");
+
+    FIELD(itemDiscountAttempts, int);
+
+    METHOD_WRAPPER(ItemVerdictPositiveGet);
+};
+
 // The roulette wheel enemy ("Gambit"). The host picks where the wheel stops
 // (GetAndSyncRandomRotation -> GetAndSyncRandomRotationRPC, accepted only from the host).
 struct EnemySpinny : Unity::MonoBehaviour

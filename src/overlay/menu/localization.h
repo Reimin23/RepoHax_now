@@ -96,6 +96,9 @@ X(LocKey_GUNS, L"GUNS", L"ОРУЖИЕ") \
 X(LocKey_MaxBatteryGun, L"Max battery", L"Максимальная батарея") \
 X(LocKey_LaserCrosshair, L"Laser crosshair", L"Лазерный прицел") \
 X(LocKey_SPAWN, L"SPAWN", L"СПАВН") \
+X(LocKey_SHOP, L"SHOP", L"МАГАЗИН") \
+X(LocKey_AlwaysDiscount, L"Shop keeper always gives a discount", L"Продавец всегда даёт скидку") \
+X(LocKey_AlwaysDiscountDesc, L"Host only. Show him a shop item; no 3 attempts limit", L"Только хост. Покажите ему товар; без лимита в 3 попытки") \
 X(LocKey_TRUCK, L"TRUCK", L"ФУРГОН") \
 X(LocKey_TeleportTruck, L"Teleport to truck", L"Телепортироваться в фургон") \
 X(LocKey_Cosmetic, L"Cosmetic", L"Косметика") \

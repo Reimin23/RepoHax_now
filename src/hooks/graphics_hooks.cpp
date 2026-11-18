@@ -107,6 +107,7 @@ namespace Cheat
         G->Unbreakable &= !G->IsClient;
         G->EasyGrab &= !G->IsClient;
         G->InfBattery &= !G->IsClient;
+        G->AlwaysDiscount &= !G->IsClient;
 
         try
         {

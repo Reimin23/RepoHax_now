@@ -161,6 +161,7 @@ namespace Cheat
 
         // Items
         bool                                InfBattery;
+        bool                                AlwaysDiscount;     // shop keeper always likes the shown item
         bool                                UseLaser;
         Item                                ItemToSpawn = null;
 
@@ -274,6 +275,7 @@ namespace Cheat
         SafetyHookInline                    PlayerAvatarVisuals_Update_Hook;
         SafetyHookInline                    PhysGrabber_Update_Hook;
         SafetyHookInline                    EnemySpinny_GetAndSyncRandomRotation_Hook;
+        SafetyHookInline                    ShopKeeper_ItemVerdictPositiveGet_Hook;
         SafetyHookInline                    PhysGrabber_PhysGrabLogic_Hook;
         SafetyHookInline                    PhysGrabber_RayCheck_Hook;
         SafetyHookInline                    Physics_Raycast_Hook;

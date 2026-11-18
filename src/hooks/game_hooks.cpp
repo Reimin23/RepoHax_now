@@ -35,6 +35,7 @@ namespace Cheat
     static void Hooked__PlayerAvatarVisuals_Update(PlayerAvatarVisuals __this);
     static void Hooked__PhysGrabber_Update(PhysGrabber __this);
     static void Hooked__EnemySpinny_GetAndSyncRandomRotation(EnemySpinny __this);
+    static bool Hooked__ShopKeeper_ItemVerdictPositiveGet(ShopKeeper __this);
     static void Hooked__PhysGrabber_PhysGrabLogic(PhysGrabber __this);
     static void Hooked__PhysGrabber_RayCheck(PhysGrabber __this, bool grab);
     static bool Hooked__Physics_Raycast(void* v1, void* v2, void* v3, float maxDistance, int v5, int v6);
@@ -91,6 +92,7 @@ namespace Cheat
         HOOK(PlayerAvatarVisuals::s_Update.Address, PlayerAvatarVisuals_Update);
         HOOK(PhysGrabber::s_Update.Address, PhysGrabber_Update);
         HOOK(EnemySpinny::s_GetAndSyncRandomRotation.Address, EnemySpinny_GetAndSyncRandomRotation);
+        HOOK(ShopKeeper::s_ItemVerdictPositiveGet.Address, ShopKeeper_ItemVerdictPositiveGet);
         HOOK(PhysGrabber::s_PhysGrabLogic.Address, PhysGrabber_PhysGrabLogic);
         HOOK(PhysGrabber::s_RayCheck.Address, PhysGrabber_RayCheck);
         HOOK(::Physics::s_Raycast.Address, Physics_Raycast);
@@ -938,6 +940,32 @@ namespace Cheat
             System::String message = ex.Message();
             Hax::LogError(G->Logger, L"%d: %ls", __LINE__, message != null ? message.ToString().GetRawStringData() : L"Exception without message");
         }
+    }
+
+    // ShopKeeper.StateVerdict calls this on the host once the shown item passed its checks; the
+    // game rolls 1 in 3 and records the item as shown / rejected. The roll still runs (it keeps the
+    // shown counter in sync), a rejection is turned into "liked": ItemDiscountApply then marks the
+    // item as discounted. Resetting the attempts keeps the keeper from denying the 4th item.
+    static bool Hooked__ShopKeeper_ItemVerdictPositiveGet(ShopKeeper __this)
+    {
+        CRASH_SCOPE("hook ShopKeeper.ItemVerdictPositiveGet");
+
+        const bool liked = G->ShopKeeper_ItemVerdictPositiveGet_Hook.unsafe_call<bool, ShopKeeper>(__this);
+        if (liked || !G->AlwaysDiscount || G->IsClient)
+            return liked;
+
+        try
+        {
+            __this.itemDiscountAttempts() = 0;
+            Hax::LogDebug(G->Logger, L"Shop keeper verdict forced to positive");
+            return true;
+        }
+        catch (System::Exception& ex)
+        {
+            System::String message = ex.Message();
+            Hax::LogError(G->Logger, L"%d: %ls", __LINE__, message != null ? message.ToString().GetRawStringData() : L"Exception without message");
+        }
+        return liked;
     }
 
     // EnemySpinny.SliceBorders / SliceColours (v0.5.2): white 22-67, green 157-202, yellow 247-292

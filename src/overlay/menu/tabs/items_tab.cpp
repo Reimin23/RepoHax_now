@@ -66,6 +66,13 @@ namespace Cheat
                 }
             }
             EndPanel();
+
+            BeginPanel(LINE_ID);
+            PanelHeader(G->Loc[LocKey_SHOP]);
+            {
+                ToggleEx(LINE_ID, G->AlwaysDiscount, G->Loc[LocKey_AlwaysDiscount], G->Loc[LocKey_AlwaysDiscountDesc], {.Disabled = G->IsClient});
+            }
+            EndPanel();
         }
         Hax::Gui::Dummy({0.f, 0.f});
         Hax::Gui::EndVertical();

@@ -1,7 +1,7 @@
-Built from commit: b3bdb4dbc7bbd6d5e1bf5fca9efa9b67cbccd48c
+Built from commit: 90f7842cd7fd7767e47dadcfe60e5b021ebf7f77
 Branch:            main
-Built (UTC):       2026-11-18 16:37
-CI run:            https://github.com/Reimin23/RepoHax_now/actions/runs/44349303106
+Built (UTC):       2026-11-18 16:38
+CI run:            https://github.com/Reimin23/RepoHax_now/actions/runs/44349509863
 
 Copy dwmapi.dll (and optionally dwmapi.pdb, for function names in crash reports)
 next to REPO.exe.

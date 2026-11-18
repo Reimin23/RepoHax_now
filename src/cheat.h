@@ -13,6 +13,7 @@ namespace Cheat
     enum class UpgradeType : int { Rest, Jump, Range, Speed, Stamina, Strength, Tumble, Wings, Health, Map, Climb, Battery, N };
     enum class AidType { Small, Medium, Large, N };
     enum class ChatPref { None = -1, Alive = 0, Dead = 1 };
+    enum RouletteResult { Roulette_Random, Roulette_Green, Roulette_Yellow, Roulette_White, Roulette_Count };
     enum class CosmeticRarity { Common, Uncommon, Rare, UltraRare, N };
 
     struct UpgradeData
@@ -124,6 +125,7 @@ namespace Cheat
         PlayerAvatar                        PlayerToRevive = null;
         PlayerAvatar                        PlayerToKill = null;
         ChatPref                            ChatPrefered = ChatPref::None;
+        int                                 RouletteResult;     // RouletteResult enum: forced color of the Gambit wheel
         size_t SelectedEnemySetup;
 
         // Vision
@@ -271,6 +273,7 @@ namespace Cheat
         SafetyHookInline                    PostProcessLayer_BuildCommandBuffers_Hook;
         SafetyHookInline                    PlayerAvatarVisuals_Update_Hook;
         SafetyHookInline                    PhysGrabber_Update_Hook;
+        SafetyHookInline                    EnemySpinny_GetAndSyncRandomRotation_Hook;
         SafetyHookInline                    PhysGrabber_PhysGrabLogic_Hook;
         SafetyHookInline                    PhysGrabber_RayCheck_Hook;
         SafetyHookInline                    Physics_Raycast_Hook;

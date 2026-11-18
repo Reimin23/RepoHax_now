@@ -72,6 +72,12 @@ X(LocKey_ENEMIES, L"ENEMIES", L"ВРАГИ") \
 X(LocKey_Spawn, L"Spawn", L"Заспавнить") \
 X(LocKey_SpawnAlt, L"Spawn", L"Заспавнить") \
 X(LocKey_CantSeePlayers, L"Cant see players", L"Не видят игроков") \
+X(LocKey_Roulette, L"Roulette (Gambit): where the wheel stops", L"Рулетка (Гамбит): где остановится колесо") \
+X(LocKey_RouletteDesc, L"Host only. Green +25 HP, yellow money bag, white full heal", L"Только хост. Зелёный +25 HP, жёлтый мешок денег, белый полное лечение") \
+X(LocKey_RouletteRandom, L"Random", L"Случайно") \
+X(LocKey_RouletteGreen, L"Green", L"Зелёный") \
+X(LocKey_RouletteYellow, L"Yellow", L"Жёлтый") \
+X(LocKey_RouletteWhite, L"White", L"Белый") \
 X(LocKey_NoGrabLimit, L"No grab time limitation", L"Можно держать вечно") \
 X(LocKey_PLAYERS, L"PLAYERS", L"ИГРОКИ") \
 X(LocKey_Tumble, L"Tumble", L"Уронить") \

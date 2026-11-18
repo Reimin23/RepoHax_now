@@ -671,6 +671,23 @@ struct ItemBattery : Unity::MonoBehaviour
     METHOD_WRAPPER_EX(BatteryFullPercentChange, "System.Void(System.Int32,System.Boolean,System.Boolean)");
 };
 
+// The roulette wheel enemy ("Gambit"). The host picks where the wheel stops
+// (GetAndSyncRandomRotation -> GetAndSyncRandomRotationRPC, accepted only from the host).
+struct EnemySpinny : Unity::MonoBehaviour
+{
+    using Unity::MonoBehaviour::MonoBehaviour;
+
+    META("Assembly-CSharp", "", "EnemySpinny");
+
+    FIELD(extraSpins, int);
+    FIELD(targetAngleDegrees, float);
+    FIELD(minExtraSpins, int);
+    FIELD(maxExtraSpins, int);
+    FIELD(photonView, Unity::Photon::PhotonView);
+
+    METHOD_WRAPPER(GetAndSyncRandomRotation);
+};
+
 // "Value" ScriptableObject: the price range a valuable rolls its value from.
 struct ValuePreset : Unity::Object
 {

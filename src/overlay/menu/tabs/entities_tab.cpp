@@ -81,6 +81,28 @@ namespace Cheat
                 HorizontalLine(1_px);
                 ToggleEx(LINE_ID, G->NoGrabMaxTime, G->Loc[LocKey_NoGrabLimit], G->Loc[LocKey_AvailableIfHost], { .Disabled = G->IsClient });
                 HorizontalLine(1_px);
+                {
+                    // The selected option is shown as a pressed (disabled) button, like the voice chat choice.
+                    const float w = Hax::Gui::GetContentRegionAvail().X;
+                    Hax::Gui::BeginVertical(5_px);
+                    {
+                        MainLabel(G->Loc[LocKey_Roulette]);
+                        DescLabel(G->Loc[LocKey_RouletteDesc]);
+                        Hax::Gui::BeginHorizontal(5_px);
+                        {
+                            static constexpr LocKey kLabels[Roulette_Count] = { LocKey_RouletteRandom, LocKey_RouletteGreen, LocKey_RouletteYellow, LocKey_RouletteWhite };
+                            const float btnW = (w - 3 * 5_px) / (float)Roulette_Count;
+                            for (int i = 0; i < Roulette_Count; ++i)
+                            {
+                                if (Button(LINE_ID + i * 10000, G->Loc[kLabels[i]], {}, { .Enabled = !G->IsClient && G->RouletteResult != i, .MinW = btnW }))
+                                    G->RouletteResult = i;
+                            }
+                        }
+                        Hax::Gui::EndHorizontal();
+                    }
+                    Hax::Gui::EndVertical();
+                }
+                HorizontalLine(1_px);
                 ToggleEx(LINE_ID, G->EnemiesEsp, G->Loc[LocKey_DisplayThroughWalls]);
             }
             EndPanel();

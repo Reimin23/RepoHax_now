@@ -34,6 +34,7 @@ namespace Cheat
     static void Hooked__PostProcessLayer_BuildCommandBuffers(Unity::PostProcessLayer __this);
     static void Hooked__PlayerAvatarVisuals_Update(PlayerAvatarVisuals __this);
     static void Hooked__PhysGrabber_Update(PhysGrabber __this);
+    static void Hooked__EnemySpinny_GetAndSyncRandomRotation(EnemySpinny __this);
     static void Hooked__PhysGrabber_PhysGrabLogic(PhysGrabber __this);
     static void Hooked__PhysGrabber_RayCheck(PhysGrabber __this, bool grab);
     static bool Hooked__Physics_Raycast(void* v1, void* v2, void* v3, float maxDistance, int v5, int v6);
@@ -89,6 +90,7 @@ namespace Cheat
         HOOK(::PostProcessLayer::s_BuildCommandBuffers.Address, PostProcessLayer_BuildCommandBuffers);
         HOOK(PlayerAvatarVisuals::s_Update.Address, PlayerAvatarVisuals_Update);
         HOOK(PhysGrabber::s_Update.Address, PhysGrabber_Update);
+        HOOK(EnemySpinny::s_GetAndSyncRandomRotation.Address, EnemySpinny_GetAndSyncRandomRotation);
         HOOK(PhysGrabber::s_PhysGrabLogic.Address, PhysGrabber_PhysGrabLogic);
         HOOK(PhysGrabber::s_RayCheck.Address, PhysGrabber_RayCheck);
         HOOK(::Physics::s_Raycast.Address, Physics_Raycast);
@@ -936,6 +938,63 @@ namespace Cheat
             System::String message = ex.Message();
             Hax::LogError(G->Logger, L"%d: %ls", __LINE__, message != null ? message.ToString().GetRawStringData() : L"Exception without message");
         }
+    }
+
+    // EnemySpinny.SliceBorders / SliceColours (v0.5.2): white 22-67, green 157-202, yellow 247-292
+    // (green also 337-22). A margin keeps the pointer away from the slice edges.
+    static bool RouletteSliceRange(int result, float& from, float& to)
+    {
+        switch (result)
+        {
+        case Roulette_White:    from = 22.f;  to = 67.f;  break;
+        case Roulette_Green:    from = 157.f; to = 202.f; break;
+        case Roulette_Yellow:   from = 247.f; to = 292.f; break;
+        default:                return false;
+        }
+        from += 6.f;
+        to -= 6.f;
+        return true;
+    }
+
+    // The host's game picks the stop angle (Random.Range(0, 360)) and sends it to everyone with
+    // GetAndSyncRandomRotationRPC; clients only accept it from the host. With a forced result the
+    // angle is picked inside the chosen slice and sent the same way.
+    static void Hooked__EnemySpinny_GetAndSyncRandomRotation(EnemySpinny __this)
+    {
+        CRASH_SCOPE("hook EnemySpinny.GetAndSyncRandomRotation");
+
+        try
+        {
+            float from = 0.f, to = 0.f;
+            if (!G->IsClient && RouletteSliceRange(G->RouletteResult, from, to))
+            {
+                const float angle = from + (to - from) * ((float)rand() / (float)RAND_MAX);
+                const int minSpins = __this.minExtraSpins();
+                const int maxSpins = Hax::Max(minSpins, __this.maxExtraSpins());
+                const int spins = minSpins + rand() % (maxSpins - minSpins + 1);
+
+                if (SemiFunc::IsMultiplayer())
+                {
+                    Array<System::Object> params = { System::Int32(spins), System::Single(angle) };
+                    __this.photonView().RPC(String::New("GetAndSyncRandomRotationRPC"), Photon::RpcTarget::All, params);
+                }
+                else
+                {
+                    __this.extraSpins() = spins;
+                    __this.targetAngleDegrees() = angle;
+                }
+
+                Hax::LogDebug(G->Logger, L"Roulette forced to %d (angle %d)", G->RouletteResult, (int)angle);
+                return;
+            }
+        }
+        catch (System::Exception& ex)
+        {
+            System::String message = ex.Message();
+            Hax::LogError(G->Logger, L"%d: %ls", __LINE__, message != null ? message.ToString().GetRawStringData() : L"Exception without message");
+        }
+
+        G->EnemySpinny_GetAndSyncRandomRotation_Hook.unsafe_call<void, EnemySpinny>(__this);
     }
 
     static void Hooked__PhysGrabber_PhysGrabLogic(PhysGrabber __this)

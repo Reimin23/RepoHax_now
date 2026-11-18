@@ -1,10 +1,10 @@
-# RepoHax — updated for R.E.P.O. v0.5.1 (unofficial)
+# RepoHax — updated for R.E.P.O. v0.5.2 (unofficial)
 
-> 🇷🇺 **Мод обновлён под новую версию игры R.E.P.O. v0.5.1.**
+> 🇷🇺 **Мод обновлён под новую версию игры R.E.P.O. v0.5.2.**
 > Это неофициальное обновление мода [RepoHax](https://github.com/Sacracia/RepoHax) от **Sacracia**.
 > Все права на оригинальный мод принадлежат его автору (лицензия MIT).
 
-> 🇬🇧 **The mod is updated for the new game version, R.E.P.O. v0.5.1.**
+> 🇬🇧 **The mod is updated for the new game version, R.E.P.O. v0.5.2.**
 > This is an unofficial update of [RepoHax](https://github.com/Sacracia/RepoHax) by **Sacracia**.
 > All credit for the original mod goes to its author (MIT license).
 
@@ -36,8 +36,8 @@ The `Build` folder is rebuilt automatically by GitHub Actions on every push to `
 ## Что изменилось / What's new
 
 **Обновление под v0.5.1 / Game update**
-- Мод снова работает на R.E.P.O. v0.5.1 (Unity 6): исправлены вызовы движка, изменившиеся методы и поля игры.
-  Works again on R.E.P.O. v0.5.1 (Unity 6): fixed engine calls and changed game methods and fields.
+- Мод снова работает на R.E.P.O. v0.5.2 (Unity 6): исправлены вызовы движка, изменившиеся методы и поля игры.
+  Works again on R.E.P.O. v0.5.2 (Unity 6): fixed engine calls and changed game methods and fields.
 - Исправлен краш при включении ESP (отображения через стены).
   Fixed the crash when ESP (display through walls) is enabled.
 

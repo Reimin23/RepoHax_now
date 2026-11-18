@@ -192,6 +192,9 @@ namespace System
         static GCHandle         Alloc(Object obj, bool pinned);
         void                    Free();
 
+        // False on Mono builds with only the legacy 32-bit handle API: freeing may crash there.
+        static bool             FreeIsSafe();
+
         void*                   Handle;
     };
 

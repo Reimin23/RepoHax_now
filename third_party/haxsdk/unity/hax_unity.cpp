@@ -964,12 +964,37 @@ UvmObject* uvm_object_new(UvmClass* klass)
 
 }
 
+// Unity's Mono (2021.2+, Unity 6) keeps GC handles as pointers. mono_gchandle_new returns them cut
+// to 32 bits: such a handle still keeps the object alive, but mono_gchandle_free crashes on it.
+// The _v2 functions take and return the full handle; the old ones are only a fallback.
+static bool UseMonoGCHandleV2()
+{
+    static const bool s_UseV2 =
+        ::GetProcAddress((HMODULE)Hax::Unity::GetUvmHandle(), "mono_gchandle_new_v2") != nullptr &&
+        ::GetProcAddress((HMODULE)Hax::Unity::GetUvmHandle(), "mono_gchandle_free_v2") != nullptr;
+    return s_UseV2;
+}
+
+bool uvm_gchandle_free_is_safe()
+{
+    if constexpr (HAX_UNITY_IS_MONO)
+        return UseMonoGCHandleV2();
+    else
+        return true;
+}
+
 void* uvm_gchandle_new(UvmObject* obj, bool pinned)
 {
     if constexpr (HAX_UNITY_IS_MONO)
     {
-        static void*(*s_ApiProc)(UvmObject*, bool) = (decltype(s_ApiProc))GetUvmProc("mono_gchandle_new");
-        return s_ApiProc(obj, pinned);
+        if (UseMonoGCHandleV2())
+        {
+            static void*(*s_ApiProcV2)(UvmObject*, int) = (decltype(s_ApiProcV2))GetUvmProc("mono_gchandle_new_v2");
+            return s_ApiProcV2(obj, pinned ? 1 : 0);
+        }
+
+        static uint32_t(*s_ApiProc)(UvmObject*, int) = (decltype(s_ApiProc))GetUvmProc("mono_gchandle_new");
+        return (void*)(uintptr_t)s_ApiProc(obj, pinned ? 1 : 0);
     }
     else
     {
@@ -1131,8 +1156,15 @@ void uvm_gchandle_free(void* handle)
 {
     if constexpr (HAX_UNITY_IS_MONO)
     {
-        static void(*s_ApiProc)(void*) = (decltype(s_ApiProc))GetUvmProc("mono_gchandle_free");
-        s_ApiProc(handle);
+        if (UseMonoGCHandleV2())
+        {
+            static void(*s_ApiProcV2)(void*) = (decltype(s_ApiProcV2))GetUvmProc("mono_gchandle_free_v2");
+            s_ApiProcV2(handle);
+            return;
+        }
+
+        static void(*s_ApiProc)(uint32_t) = (decltype(s_ApiProc))GetUvmProc("mono_gchandle_free");
+        s_ApiProc((uint32_t)(uintptr_t)handle);
     }
     else
     {

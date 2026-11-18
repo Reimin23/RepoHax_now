@@ -1492,6 +1492,42 @@ namespace Cheat
             return;
 
         Hax::Vector<ValuableSpawnEntry>& pool = G->ValuablesPool;
+
+        // Without a GC handle that can be freed again the request object can't be kept between
+        // frames: load one prefab per frame synchronously (asking for the asset finishes the load).
+        // Only happens until the prices are cached in the file.
+        static const bool s_Async = System::GCHandle::FreeIsSafe();
+        if (!s_Async)
+        {
+            while (s_Next < pool.Size() && pool[s_Next].PriceKnown)
+                ++s_Next;
+
+            if (s_Next < pool.Size())
+            {
+                const int index = (int)s_Next++;
+                try
+                {
+                    System::String path = pool[index].Ref.ResourcePath();
+                    if (path != null && path.GetLength() > 0)
+                    {
+                        Unity::ResourceRequest request = Unity::Resources::LoadAsync(path);
+                        if (request != null && ReadValuablePrice(pool[index], request.GetAsset()))
+                            ++s_Read;
+                    }
+                }
+                catch (System::Exception&)
+                {
+                }
+                return;
+            }
+
+            s_Done = true;
+            Hax::LogDebug(G->Logger, L"Valuable prices: %d read from the game (one per frame)", s_Read);
+            if (s_Read > 0)
+                SavePriceCache();
+            return;
+        }
+
         bool busy = false;
 
         for (int slot = 0; slot < kSlots; ++slot)

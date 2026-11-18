@@ -57,6 +57,11 @@ namespace System
         return GCHandle{handle};
     }
 
+    bool GCHandle::FreeIsSafe()
+    {
+        return uvm_gchandle_free_is_safe();
+    }
+
     void GCHandle::Free()
     {
         if (Handle != nullptr)

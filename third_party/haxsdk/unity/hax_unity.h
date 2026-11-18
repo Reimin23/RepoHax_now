@@ -161,6 +161,8 @@ void uvm_gc_wbarrier_set_field(const UvmObject* obj, UvmObject** field, UvmObjec
 void* uvm_lookup_internal_call(UvmMethod* method);
 void* uvm_resolve_icall(const char* name);
 void uvm_gchandle_free(void* handle);
+// False when only the legacy 32-bit Mono GC handle API exists: freeing such a handle may crash.
+bool uvm_gchandle_free_is_safe();
 UvmClass* uvm_methodinfo_get_class();
 UvmReflectionMethod* uvm_method_get_object(UvmMethod* method);
 UvmClass* uvm_fieldinfo_get_class();

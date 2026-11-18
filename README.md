@@ -35,7 +35,7 @@ The `Build` folder is rebuilt automatically by GitHub Actions on every push to `
 
 ## Что изменилось / What's new
 
-**Обновление под v0.5.1 / Game update**
+**Обновление под v0.5.1–v0.5.2 / Game update**
 - Мод снова работает на R.E.P.O. v0.5.2 (Unity 6): исправлены вызовы движка, изменившиеся методы и поля игры.
   Works again on R.E.P.O. v0.5.2 (Unity 6): fixed engine calls and changed game methods and fields.
 - Исправлен краш при включении ESP (отображения через стены).
@@ -65,7 +65,7 @@ The `Build` folder is rebuilt automatically by GitHub Actions on every push to `
 ## Авторы / Credits
 
 - Оригинальный мод / Original mod: [Sacracia/RepoHax](https://github.com/Sacracia/RepoHax)
-- Обновление под v0.5.1 / v0.5.1 update: Reimin23
+- Обновление под v0.5.1–v0.5.2 / v0.5.1–v0.5.2 update: Reimin23
 
 ---
 
